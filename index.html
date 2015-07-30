@@ -1,0 +1,57 @@
+<html>
+<head>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
+  <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
+
+    <style>
+      #layer_selector {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        padding: 0;
+      }
+      #layer_selector ul {
+        padding: 0; margin: 0;
+        list-style-type: none;
+      }
+      #layer_selector li {
+        border-bottom: 1px solid #999;
+        padding: 15px 30px;
+        font-family: "Helvetica", Arial;
+        font-size: 13px;
+        color: #444;
+        cursor: auto;
+      }
+      #layer_selector li:hover {
+        background-color: #F0F0F0;
+        cursor: pointer;
+      }
+      #layer_selector li.selected {
+        background-color: #EEE;
+      }
+    </style>
+  
+</head>
+
+<body>
+
+  <div id='map'></div>
+  <div id="layer_selector" class="cartodb-infobox">
+      <ul>
+        <li count="all" class="selected">All districts</li>
+        <li count="100">count >100 km<sup>2</sup></li>
+        <li count="600">count >600 km<sup>2</sup></li>
+        <li count="1000">count >1000 km<sup>2</sup></li>
+        <li count="5000">count >5000 km<sup>2</sup></li>
+      </ul>
+    </div>
+
+
+  <script src="./js/script.js"></script>
+
+</body>
+</html>
+
