@@ -52,7 +52,7 @@ function main() {
  
        vis.addOverlay({
          type: 'infobox',
-         template: '<h3>{{name}}</h3><p>{{count}}</p>',
+         template: '<h3>район: {{name}}</h3><p>кол-во фото: {{count}}</p>',
          width: 200,
          position: 'bottom|right'
        });
@@ -62,52 +62,3 @@ function main() {
 
 }
 window.onload = main
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*    var currentHover, newFeature = null;
-    cartodb.createLayer(map, layerUrl)
-      .addTo(map)
-      .on('done', function(layer) {
-        layer.getSubLayer(0).setInteraction(true);
-        layer.on('featureOver', function(ev, pos, latlng, data){
-          console.log("featureover");
-          //check to see if it's the same feature so we don't waste an API call
-          if(data.cartodb_id != currentHover) {
-            layerGroup.clearLayers();
-          
-            $.getJSON(baseAPI + data.cartodb_id, function(res) {
-          
-              newFeature = L.geoJson(res,{
-                style: {
-                  "color": "#DCFF2E",
-                  "weight": 5,
-                  "opacity": 1
-                }
-              });
-              layerGroup.addLayer(newFeature);
-              layerGroup.addTo(map);
-              updateSidebar(res.features[0].properties);
-              updateChart(res.features[0].properties)
-
-            })
-            currentHover = data.cartodb_id;
-          }
-        })
-        .on('featureOut', function(){
-          layerGroup.clearLayers();
-        })    
-      }*/
-         
