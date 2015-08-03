@@ -2,55 +2,53 @@
 <head>
 
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
-  <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
-    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
-  <script src="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
-
-    <style>
-      #layer_selector {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        padding: 0;
-      }
-      #layer_selector ul {
-        padding: 0; margin: 0;
-        list-style-type: none;
-      }
-      #layer_selector li {
-        border-bottom: 1px solid #999;
-        padding: 15px 30px;
-        font-family: "Helvetica", Arial;
-        font-size: 13px;
-        color: #444;
-        cursor: auto;
-      }
-      #layer_selector li:hover {
-        background-color: #F0F0F0;
-        cursor: pointer;
-      }
-      #layer_selector li.selected {
-        background-color: #EEE;
-      }
-    </style>
   
+  <style>
+  html, body, #map-canvas {
+        height: 100%;
+        width: 92.5%;
+        padding: 0;
+        margin: 0;
+      }
+      .info {
+      padding: 6px 8px;
+      font: 14px/16px Arial, Helvetica, sans-serif;
+      background: white;
+      background: rgba(255,255,255,0.8);
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      border-radius: 5px;
+    }
+    .info h4 {
+      margin: 0 0 5px;
+      color: #777;
+    }
+
+    .legend {
+      text-align: left;
+      line-height: 18px;
+      color: #555;
+    }
+    .legend i {
+      width: 18px;
+      height: 18px;
+      float: left;
+      margin-right: 8px;
+      opacity: 0.7;
+    }
+  </style>
+
+  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+
 </head>
 
 <body>
+  <div id='map-canvas'></div>
+  <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+  <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.core.js"></script>
 
-  <div id='map'></div>
-  <div id="layer_selector" class="cartodb-infobox">
-      <ul>
-        <li count="all" class="selected">All districts</li>
-        <li count="100">count >100 photos</li>
-        <li count="600">count >600 photos</li>
-        <li count="1000">count >1000 photos</li>
-        <li count="5000">count >5000 photos</li>
-      </ul>
-    </div>
+  <script src="./js/script-map.js"></script>
 
 
-  <script src="./js/script.js"></script>
 
 </body>
 </html>
