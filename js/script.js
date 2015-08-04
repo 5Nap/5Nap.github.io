@@ -23,8 +23,11 @@ L.tileLayer('https://a.tiles.mapbox.com/v4/5nap.n1dnk63f/{z}/{x}/{y}.png?access_
 
     info.update = function (props) {
       this._div.innerHTML = '<h4>Flickr photos per district</h4>' +  (props ?
-        '<b>' + 'Район: ' + props.name + '</b><br />' + props.count + ' photos'
-        : 'Hover over');
+        'ID: ' + props.cartodb_id + '<br />' +
+        'Округ: ' + props.name_ao + '<br />' +
+        '<b>' + 'Район: ' + props.name + '</b><br />' +
+        props.count + ' photos'
+        : 'Hover over a district');
     };
 
     info.addTo(map);
@@ -32,36 +35,42 @@ L.tileLayer('https://a.tiles.mapbox.com/v4/5nap.n1dnk63f/{z}/{x}/{y}.png?access_
 
     // get color depending on population density value
     function getColor(d) {
-      return d > 1000 ? '#800026' :
-             d > 500  ? '#BD0026' :
-             d > 200  ? '#E31A1C' :
-             d > 100  ? '#FC4E2A' :
-             d > 50   ? '#FD8D3C' :
-             d > 20   ? '#FEB24C' :
-             d > 10   ? '#FED976' :
-                        '#FFEDA0';
-    }
+      var red = 0;
+      var green = 0;
+      var blue = 0;
+      var maxd = 255*Math.log(2)/Math.log(73000);
+      red = maxd * Math.log(d) / Math.log(2);
+      blue = 255 - maxd * Math.log(d) / Math.log(2);
+      green = 255 - maxd * Math.log(d) / Math.log(2);
+      intred = Math.round(red);
+      intgreen = Math.round(green);
+      intblue = Math.round(blue);
+      var returncolor = "#";
+      if (intred < 16){returncolor += "0"+intred.toString(16);
+      } else {returncolor += intred.toString(16);}
+      if (intgreen < 16){returncolor += "0"+intgreen.toString(16);
+      } else {returncolor += intgreen.toString(16);}
+      if (intblue < 16){returncolor += "0"+intblue.toString(16);
+      } else {returncolor += intblue.toString(16);}
+      console.log(intred, ' ', intblue, ' ', returncolor)
+      return returncolor;}
 
     function style(feature) {
       return {
-        weight: 0.5,
-        opacity: 1,
+        weight: 0.2,
+        opacity: 0.6,
         color: 'white',
-        //dashArray: '3',
-        fillOpacity: 0.5,
+        fillOpacity: 0.4,
         fillColor: getColor(feature.properties.count)
       };
     }
 
     function highlightFeature(e) {
       var layer = e.target;
-
-      layer.setStyle({
+      if (layer != lastClickedLayer) {layer.setStyle({
         weight: 1,
-        color: 'gray',
-        //dashArray: '',
         fillOpacity: 0.7
-      });
+      });}
 
       if (!L.Browser.ie && !L.Browser.opera) {
         layer.bringToFront();
@@ -70,15 +79,23 @@ L.tileLayer('https://a.tiles.mapbox.com/v4/5nap.n1dnk63f/{z}/{x}/{y}.png?access_
       info.update(layer.feature.properties);
     }
 
-    var geojsondata;
-
+    var districts;
+    var lastClickedLayer;
+    
     function resetHighlight(e) {
-      geojsondata.resetStyle(e.target);
+      if (lastClickedLayer != e.target) {districts.resetStyle(e.target);}
       info.update();
     }
 
     function zoomToFeature(e) {
+      if (lastClickedLayer != null) {districts.resetStyle(lastClickedLayer);};
       map.fitBounds(e.target.getBounds());
+      e.target.setStyle({
+        weight: 2,
+        fillOpacity: 0.7
+      });
+      lastClickedLayer = e.target;
+      info.update(lastClickedLayer.feature.properties);
     }
 
     function onEachFeature(feature, layer) {
@@ -89,8 +106,9 @@ L.tileLayer('https://a.tiles.mapbox.com/v4/5nap.n1dnk63f/{z}/{x}/{y}.png?access_
       });
     }
 
-    sql.execute("select cartodb_id, name, count, the_geom as the_geom from districts").done(function (geojson) {
-    geojsondata = L.geoJson(geojson, {
+//    sql.execute("select cartodb_id, name, count, the_geom as the_geom from districts").done(function (geojson) {
+    sql.execute("select * from districts").done(function (geojson) {
+    districts = L.geoJson(geojson, {
       style: style,
       onEachFeature: onEachFeature
     }).addTo(map);
@@ -105,17 +123,16 @@ L.tileLayer('https://a.tiles.mapbox.com/v4/5nap.n1dnk63f/{z}/{x}/{y}.png?access_
     legend.onAdd = function (map) {
 
       var div = L.DomUtil.create('div', 'info legend'),
-        grades = [0, 100, 200, 500, 1000, 2000, 5000, 10000],
+        grades = [0, 100, 200, 500, 1000, 2000, 5000, 10000, 75000],
         labels = [],
         from, to;
 
-      for (var i = 0; i < grades.length; i++) {
+      for (var i = 0; i < grades.length-1; i++) {
         from = grades[i];
         to = grades[i + 1];
 
         labels.push(
-          '<i style="background:' + getColor(from + 1) + '"></i> ' +
-          from + (to ? '&ndash;' + to : '+'));
+          '<i style="background:' + getColor((from+to)/2) + '"></i> ' + from + (to ? '&ndash;' + to : '+'));
       }
 
       div.innerHTML = labels.join('<br>');
