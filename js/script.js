@@ -1,19 +1,22 @@
 
 function main() {
-var map = L.map('map-canvas').setView([55.505, 37], 9);
-
-L.tileLayer('https://a.tiles.mapbox.com/v4/5nap.n1dnk63f/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiNW5hcCIsImEiOiJFRWdtc2dJIn0.BQoIUQaZuUvsipZlLS1OBA', {
-    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-}).addTo(map);
-
-
-
-
+var map;
+map = new L.map('map-canvas',{
+  center: [55.505, 37],
+  zoom: 9,
+  minZoom: 9,
+  maxBounds: [[55.1,36.7] , [56.1, 38.2]]
+});
 
     // control that shows state info on hover
     var info = L.control();
 
     var sql = new cartodb.SQL({ user: '5nap', format: 'geojson' });
+
+    var pointStyle = $("#pointstyle").text();
+
+    var cdbHM;
+
 
     info.onAdd = function (map) {
       this._div = L.DomUtil.create('div', 'info');
@@ -26,7 +29,7 @@ L.tileLayer('https://a.tiles.mapbox.com/v4/5nap.n1dnk63f/{z}/{x}/{y}.png?access_
         'ID: ' + props.cartodb_id + '<br />' +
         'Округ: ' + props.name_ao + '<br />' +
         '<b>' + 'Район: ' + props.name + '</b><br />' +
-        props.count + ' photos'
+        'Total ' + props.count + ' photos'
         : 'Hover over a district');
     };
 
@@ -52,18 +55,25 @@ L.tileLayer('https://a.tiles.mapbox.com/v4/5nap.n1dnk63f/{z}/{x}/{y}.png?access_
       } else {returncolor += intgreen.toString(16);}
       if (intblue < 16){returncolor += "0"+intblue.toString(16);
       } else {returncolor += intblue.toString(16);}
-      console.log(intred, ' ', intblue, ' ', returncolor)
       return returncolor;}
 
     function style(feature) {
       return {
-        weight: 0.2,
-        opacity: 0.6,
+        weight: 0.3,
+        opacity: 1,
         color: 'white',
-        fillOpacity: 0.4,
+        fillOpacity: 0.7,
         fillColor: getColor(feature.properties.count)
       };
     }
+
+    var style_clicked = {
+        weight: 3,
+        opacity: 1,
+        color: 'white',
+        fillOpacity: 1,
+        fillColor: 'white'
+      }
 
     function highlightFeature(e) {
       var layer = e.target;
@@ -81,6 +91,10 @@ L.tileLayer('https://a.tiles.mapbox.com/v4/5nap.n1dnk63f/{z}/{x}/{y}.png?access_
 
     var districts;
     var lastClickedLayer;
+    var cdbPoints = null;
+
+    var CdbUrl = "https://5nap.cartodb.com/api/v2/viz/f869a73a-3c2a-11e5-83dc-0e018d66dc29/viz.json";
+    var CdbHMUrl = "https://5nap.cartodb.com/api/v2/viz/4ae64406-3c34-11e5-b7f2-0e4fddd5de28/viz.json";
     
     function resetHighlight(e) {
       if (lastClickedLayer != e.target) {districts.resetStyle(e.target);}
@@ -89,13 +103,45 @@ L.tileLayer('https://a.tiles.mapbox.com/v4/5nap.n1dnk63f/{z}/{x}/{y}.png?access_
 
     function zoomToFeature(e) {
       if (lastClickedLayer != null) {districts.resetStyle(lastClickedLayer);};
-      map.fitBounds(e.target.getBounds());
+      if (lastClickedLayer != e.target) {
+        map.fitBounds(e.target.getBounds());
+      };
+
+//      districts.setStyle(style_clicked);
+
       e.target.setStyle({
         weight: 2,
-        fillOpacity: 0.7
+        fillOpacity: 0.0
       });
+
+      var CompareLayer = e.target
+
+
+      cartodb.createLayer(map,CdbUrl,{
+      legends: false
+    }).addTo(map)
+        .on('done', function(layer) {
+          if (cdbPoints != null) {cdbPoints.remove();};
+          var subLayerOptions = {
+            sql: "SELECT * FROM flickr_arch where id_distr = '"+lastClickedLayer.feature.properties.cartodb_id+"'",
+            cartocss: pointStyle,
+          }
+
+          cdbPoints = layer.getSubLayer(0);
+          cdbPoints.set(subLayerOptions);
+
+          cdbPoints.infowindow.set('template', $('#infowindow_template').html());
+
+                 
+//          cdbPoints.on('featureClick', function(e, latlng, pos, data) {
+//            alert("Hey! You clicked " + data.cartodb_id);
+//          });
+        });
+      
+
       lastClickedLayer = e.target;
       info.update(lastClickedLayer.feature.properties);
+
     }
 
     function onEachFeature(feature, layer) {
@@ -106,17 +152,43 @@ L.tileLayer('https://a.tiles.mapbox.com/v4/5nap.n1dnk63f/{z}/{x}/{y}.png?access_
       });
     }
 
-//    sql.execute("select cartodb_id, name, count, the_geom as the_geom from districts").done(function (geojson) {
     sql.execute("select * from districts").done(function (geojson) {
     districts = L.geoJson(geojson, {
       style: style,
       onEachFeature: onEachFeature
-    }).addTo(map);
+    }).addTo(map,1)});
+
+
+
+
+    cdbHM = cartodb.createLayer(map,CdbHMUrl,{
+      infowindow: false,
+      legends: false
+    }).on('done', function(layer) {
+      layer.addTo(map);
     });
 
 
-    map.attributionControl.addAttribution('&copy; <a href="http://flickr.com/">Flickr</a>');
 
+    //cdbLayer.bringToFront();
+
+
+//    cdbSubLayer = cdbLayer.getSubLayerCount();
+//    console.log('layers count: ', cdbSubLayer);
+//    cdbLayer.addTo(map,5).on('done', function(layer) {
+//    layer.on('featureClick', function(e, data) {
+//        console.log(e, data);
+//      });
+//    });
+
+    console.log('done1!');
+
+    L.tileLayer('https://a.tiles.mapbox.com/v4/5nap.n1dnk63f/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiNW5hcCIsImEiOiJFRWdtc2dJIn0.BQoIUQaZuUvsipZlLS1OBA', {
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map, 0);
+
+    
+    map.attributionControl.addAttribution('&copy; <a href="http://flickr.com/">Flickr</a>');
 
     var legend = L.control({position: 'bottomright'});
 
