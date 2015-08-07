@@ -15,8 +15,25 @@ map = new L.map('map-canvas',{
 
     var pointStyle = $("#pointstyle").text();
 
-    var cdbHM;
+    var CdbUrl = "https://5nap.cartodb.com/api/v2/viz/f869a73a-3c2a-11e5-83dc-0e018d66dc29/viz.json";
+    var CdbHMUrl = "https://5nap.cartodb.com/api/v2/viz/4ae64406-3c34-11e5-b7f2-0e4fddd5de28/viz.json";
+  
 
+    var districts;
+    var lastClickedLayer;
+    var cdbPoints = null;
+    var cdbHM;
+    var tempLayer = null;
+
+    var style_clicked = {
+        weight: 3,
+        opacity: 1,
+        color: 'white',
+        fillOpacity: 1,
+        fillColor: 'white'
+      }    
+
+    
 
     info.onAdd = function (map) {
       this._div = L.DomUtil.create('div', 'info');
@@ -36,7 +53,7 @@ map = new L.map('map-canvas',{
     info.addTo(map);
 
 
-    // get color depending on population density value
+    // get color depending on the amount of photos.
     function getColor(d) {
       var red = 0;
       var green = 0;
@@ -67,16 +84,11 @@ map = new L.map('map-canvas',{
       };
     }
 
-    var style_clicked = {
-        weight: 3,
-        opacity: 1,
-        color: 'white',
-        fillOpacity: 1,
-        fillColor: 'white'
-      }
-
     function highlightFeature(e) {
-      var layer = e.target;
+      e.target.setStyle({
+        weight: 2,
+      })
+/*      var layer = e.target;
       if (layer != lastClickedLayer) {layer.setStyle({
         weight: 1,
         fillOpacity: 0.7
@@ -85,37 +97,29 @@ map = new L.map('map-canvas',{
       if (!L.Browser.ie && !L.Browser.opera) {
         layer.bringToFront();
       }
-
-      info.update(layer.feature.properties);
+*/
+      info.update(e.target.feature.properties);
     }
 
-    var districts;
-    var lastClickedLayer;
-    var cdbPoints = null;
-
-    var CdbUrl = "https://5nap.cartodb.com/api/v2/viz/f869a73a-3c2a-11e5-83dc-0e018d66dc29/viz.json";
-    var CdbHMUrl = "https://5nap.cartodb.com/api/v2/viz/4ae64406-3c34-11e5-b7f2-0e4fddd5de28/viz.json";
     
     function resetHighlight(e) {
-      if (lastClickedLayer != e.target) {districts.resetStyle(e.target);}
+//      if (lastClickedLayer != e.target) {districts.resetStyle(e.target);}
+    e.target.setStyle({
+      weight: 0.3,
+    })
       info.update();
     }
 
     function zoomToFeature(e) {
       if (lastClickedLayer != null) {districts.resetStyle(lastClickedLayer);};
-      if (lastClickedLayer != e.target) {
+      tempLayer = e.target;
+      if (lastClickedLayer != tempLayer) {
         map.fitBounds(e.target.getBounds());
-      };
-
-//      districts.setStyle(style_clicked);
-
+      
       e.target.setStyle({
-        weight: 2,
+        //weight: 2,
         fillOpacity: 0.0
       });
-
-      var CompareLayer = e.target
-
 
       cartodb.createLayer(map,CdbUrl,{
       legends: false
@@ -137,7 +141,7 @@ map = new L.map('map-canvas',{
 //            alert("Hey! You clicked " + data.cartodb_id);
 //          });
         });
-      
+      };
 
       lastClickedLayer = e.target;
       info.update(lastClickedLayer.feature.properties);
