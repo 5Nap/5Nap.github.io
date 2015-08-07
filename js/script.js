@@ -5,7 +5,8 @@ map = new L.map('map-canvas',{
   center: [55.505, 37],
   zoom: 9,
   minZoom: 9,
-  maxBounds: [[55.1,36.7] , [56.1, 38.2]]
+  maxBounds: [[55.1,36.7] , [56.1, 38.2]],
+  touchZoom: false,
 });
 
     // control that shows state info on hover
@@ -20,7 +21,7 @@ map = new L.map('map-canvas',{
   
 
     var districts;
-    var lastClickedLayer;
+    var lastClickedLayer = null;
     var cdbPoints = null;
     var cdbHM;
     var tempLayer = null;
@@ -79,45 +80,45 @@ map = new L.map('map-canvas',{
         weight: 0.3,
         opacity: 1,
         color: 'white',
-        fillOpacity: 0.7,
+        fillOpacity: 0.2,
         fillColor: getColor(feature.properties.count)
       };
     }
 
     function highlightFeature(e) {
-      e.target.setStyle({
-        weight: 2,
-      })
-/*      var layer = e.target;
+//      e.target.setStyle({
+//       weight: 2,
+//      })
+      var layer = e.target;
       if (layer != lastClickedLayer) {layer.setStyle({
         weight: 1,
-        fillOpacity: 0.7
+        fillOpacity: 0.3
       });}
 
       if (!L.Browser.ie && !L.Browser.opera) {
         layer.bringToFront();
       }
-*/
+
       info.update(e.target.feature.properties);
     }
 
     
     function resetHighlight(e) {
-//      if (lastClickedLayer != e.target) {districts.resetStyle(e.target);}
-    e.target.setStyle({
-      weight: 0.3,
-    })
+      if (lastClickedLayer != e.target) {districts.resetStyle(e.target);}
+//    e.target.setStyle({
+//      weight: 0.3,
+//    })
       info.update();
     }
 
     function zoomToFeature(e) {
-      if (lastClickedLayer != null) {districts.resetStyle(lastClickedLayer);};
-      tempLayer = e.target;
-      if (lastClickedLayer != tempLayer) {
+      if (lastClickedLayer != e.target && lastClickedLayer != null) {districts.resetStyle(lastClickedLayer);};
+
+      if (lastClickedLayer != e.target) {
         map.fitBounds(e.target.getBounds());
       
       e.target.setStyle({
-        //weight: 2,
+        weight: 2,
         fillOpacity: 0.0
       });
 
@@ -137,9 +138,9 @@ map = new L.map('map-canvas',{
           cdbPoints.infowindow.set('template', $('#infowindow_template').html());
 
                  
-//          cdbPoints.on('featureClick', function(e, latlng, pos, data) {
-//            alert("Hey! You clicked " + data.cartodb_id);
-//          });
+          cdbPoints.on('featureClick', function(e, latlng, pos, data) {
+            alert("Hey! You clicked " + data.cartodb_id);
+          });
         });
       };
 
@@ -173,26 +174,14 @@ map = new L.map('map-canvas',{
     });
 
 
-
-    //cdbLayer.bringToFront();
-
-
-//    cdbSubLayer = cdbLayer.getSubLayerCount();
-//    console.log('layers count: ', cdbSubLayer);
-//    cdbLayer.addTo(map,5).on('done', function(layer) {
-//    layer.on('featureClick', function(e, data) {
-//        console.log(e, data);
-//      });
-//    });
-
     console.log('done1!');
 
     L.tileLayer('https://a.tiles.mapbox.com/v4/5nap.n1dnk63f/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiNW5hcCIsImEiOiJFRWdtc2dJIn0.BQoIUQaZuUvsipZlLS1OBA', {
-        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors | &copy; <a href="http://flickr.com/">Flickr</a>'
     }).addTo(map, 0);
 
     
-    map.attributionControl.addAttribution('&copy; <a href="http://flickr.com/">Flickr</a>');
+//    map.attributionControl.addAttribution('&copy; <a href="http://flickr.com/">Flickr</a>');
 
     var legend = L.control({position: 'bottomright'});
 
