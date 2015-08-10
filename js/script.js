@@ -80,7 +80,7 @@ map = new L.map('map-canvas',{
         weight: 0.3,
         opacity: 1,
         color: 'white',
-        fillOpacity: 0.2,
+        fillOpacity: 0.35,
         fillColor: getColor(feature.properties.count)
       };
     }
@@ -92,7 +92,7 @@ map = new L.map('map-canvas',{
       var layer = e.target;
       if (layer != lastClickedLayer) {layer.setStyle({
         weight: 1,
-        fillOpacity: 0.3
+        fillOpacity: 0.4
       });}
 
       if (!L.Browser.ie && !L.Browser.opera) {
