@@ -80,7 +80,7 @@ map = new L.map('map-canvas',{
         weight: 0.3,
         opacity: 1,
         color: 'white',
-        fillOpacity: 0.35,
+        fillOpacity: 0.3,
         fillColor: getColor(feature.properties.count)
       };
     }
@@ -136,16 +136,16 @@ map = new L.map('map-canvas',{
           cdbPoints.set(subLayerOptions);
 
           cdbPoints.infowindow.set('template', $('#infowindow_template').html());
-
                  
-          cdbPoints.on('featureClick', function(e, latlng, pos, data) {
-            alert("Hey! You clicked " + data.cartodb_id);
-          });
+//          cdbPoints.on('featureClick', function(e, latlng, pos, data) {
+//            alert("Hey! You clicked " + data.cartodb_id);
+//          });
         });
       };
 
       lastClickedLayer = e.target;
       info.update(lastClickedLayer.feature.properties);
+      districts.SendToBack();
 
     }
 
@@ -169,6 +169,7 @@ map = new L.map('map-canvas',{
     cdbHM = cartodb.createLayer(map,CdbHMUrl,{
       infowindow: false,
       legends: false
+//      opacity: 0.5
     }).on('done', function(layer) {
       layer.addTo(map);
     });
