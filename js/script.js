@@ -80,7 +80,7 @@ map = new L.map('map-canvas',{
         weight: 0.3,
         opacity: 1,
         color: 'white',
-        fillOpacity: 0.3,
+        fillOpacity: 0.4,
         fillColor: getColor(feature.properties.count)
       };
     }
@@ -92,7 +92,7 @@ map = new L.map('map-canvas',{
       var layer = e.target;
       if (layer != lastClickedLayer) {layer.setStyle({
         weight: 1,
-        fillOpacity: 0.4
+        fillOpacity: 0.5
       });}
 
       if (!L.Browser.ie && !L.Browser.opera) {
@@ -128,7 +128,7 @@ map = new L.map('map-canvas',{
         .on('done', function(layer) {
           if (cdbPoints != null) {cdbPoints.remove();};
           var subLayerOptions = {
-            sql: "SELECT * FROM flickr_arch where id_distr = '"+lastClickedLayer.feature.properties.cartodb_id+"'",
+            sql: "SELECT * FROM flickr_arch where id = '"+lastClickedLayer.feature.properties.cartodb_id+"'",
             cartocss: pointStyle,
           }
 
