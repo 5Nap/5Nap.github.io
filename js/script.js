@@ -177,7 +177,7 @@ map = new L.map('map-canvas',{
 
     console.log('done1!');
 
-    L.tileLayer('https://a.tiles.mapbox.com/v4/5nap.n1dnk63f/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiNW5hcCIsImEiOiJFRWdtc2dJIn0.BQoIUQaZuUvsipZlLS1OBA', {
+    L.tileLayer('https://a.tiles.mapbox.com/v4/5nap.ff0f1abf/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiNW5hcCIsImEiOiJFRWdtc2dJIn0.BQoIUQaZuUvsipZlLS1OBA', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors | &copy; <a href="http://flickr.com/">Flickr</a>'
     }).addTo(map, 0);
 
