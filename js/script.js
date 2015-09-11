@@ -48,7 +48,7 @@ map = new L.map('map-canvas',{
         'Округ: ' + props.name_ao + '<br />' +
         '<b>' + 'Район: ' + props.name + '</b><br />' +
         'Total ' + props.count + ' photos'
-        : 'Hover over a district');
+        : 'Click on a district');
     };
 
     info.addTo(map);
