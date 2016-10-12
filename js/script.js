@@ -16,7 +16,8 @@ map = new L.map('map-canvas',{
 
     var pointStyle = $("#pointstyle").text();
 
-    var CdbUrl = "https://5nap.cartodb.com/api/v2/viz/f869a73a-3c2a-11e5-83dc-0e018d66dc29/viz.json";
+    //var CdbUrl = "https://5nap.cartodb.com/api/v2/viz/f869a73a-3c2a-11e5-83dc-0e018d66dc29/viz.json";
+    var CdbUrl = "https://5nap.cartodb.com/api/v2/viz/340b24b4-9060-11e6-a4c4-0e3ff518bd15/viz.json";
     var CdbHMUrl = "https://5nap.cartodb.com/api/v2/viz/4ae64406-3c34-11e5-b7f2-0e4fddd5de28/viz.json";
   
 
